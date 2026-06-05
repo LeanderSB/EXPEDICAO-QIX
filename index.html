@@ -161,7 +161,7 @@
   <select id="filterLoja"><option value="">Todas</option></select>
   <button id="applyFilter">Aplicar Filtro</button>
   <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" />
-  <button id="pdfBtn">Gerar PDF (2 por página A4)</button>
+  <button id="pdfBtn">Gerar PDF</button>
   <div class="small">CSV BR normalmente usa ; como separador</div>
 </div>
 
@@ -250,7 +250,8 @@ function normalizeRows(rows){
       numeroMulti: pick(map, ['numerodopedidomultiloja','pedidomultiloja']),
       sku: pick(map, ['sku','codigo','codigosku']),
       descricao: pick(map, ['descricao','produto','description','title']),
-      qtd: pick(map, ['quantidade','qtd','qty']) || '1'
+      qtd: pick(map, ['quantidade','qtd','qty']) || '1',
+      precoVenda: pick(map, ['precovenda']),
     };
   });
 }
@@ -278,9 +279,15 @@ function renderCards(data){
   data.forEach((d,i)=>{
     const card=document.createElement('div');
     card.className='card';
+    const numeroRomaneio = i + 1;
+    const totalRomaneios = data.length;
 
     card.innerHTML=`
       <div class="info">
+       <div style="font-size:16px;font-weight:bold;color:#ff001f;margin-bottom:8px">
+  ROMANEIO ${numeroRomaneio} de ${totalRomaneios}
+</div>
+
         <div><b>Cliente:</b> ${escapeHTML(d.nome)}</div>
         <div><b>CPF/CNPJ:</b> ${escapeHTML(d.cpf)}</div>
         <div><b>Endereço:</b> ${escapeHTML(d.endereco)}</div>
@@ -291,6 +298,7 @@ function renderCards(data){
         <div><b>SKU:</b> ${escapeHTML(d.sku)}</div>
         <div><b>Produto:</b> ${escapeHTML(d.descricao)}</div>
         <div><b>Qtd:</b> ${escapeHTML(d.qtd)}</div>
+        <div><b>Preço Venda:</b> R$ ${escapeHTML(d.precoVenda)}</div>
       </div>
       <div class="barcode-wrap">
         <svg class="barcode-svg" jsbarcode-value="${d.numeroPedido||'P'+i}"></svg>
@@ -330,19 +338,19 @@ pdfBtn.onclick = async () => {
   if (!visibleData.length) return alert("Nenhum dado carregado");
 
   const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("l", "mm", "a4"); //Paisagem
+  const pdf = new jsPDF("p", "mm", "a4"); //Retrato
   const margin = 8;
-  const pw = 297;
-  const ph = 210;
+  const pw = 210;
+  const ph = 297;
   const w = pw - margin * 2;
   const h = ph - margin * 2;
   //Dois Romaneios por página
-  const cardH = h / 2;
+  const cardH = h / 4;
 
-  for (let i = 0; i < visibleData.length; i += 2) {
+  for (let i = 0; i < visibleData.length; i += 4) {
     if (i > 0) pdf.addPage();
 
-    for (let j = 0; j < 2; j++) {
+    for (let j = 0; j < 4; j++) {
       const idx = i + j;
       if (idx >= visibleData.length) break;
 
