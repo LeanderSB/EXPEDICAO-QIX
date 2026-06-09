@@ -251,7 +251,7 @@ function normalizeRows(rows){
       sku: pick(map, ['sku','codigo','codigosku']),
       descricao: pick(map, ['descricao','produto','description','title']),
       qtd: pick(map, ['quantidade','qtd','qty']) || '1',
-      precoVenda: pick(map, ['precovenda']),
+      valortotal: pick(map, ['valortotal']),
     };
   });
 }
@@ -298,7 +298,7 @@ function renderCards(data){
         <div><b>SKU:</b> ${escapeHTML(d.sku)}</div>
         <div><b>Produto:</b> ${escapeHTML(d.descricao)}</div>
         <div><b>Qtd:</b> ${escapeHTML(d.qtd)}</div>
-        <div><b>Preço Venda:</b> R$ ${escapeHTML(d.precoVenda)}</div>
+        <div><b>Valor Total:</b> R$ ${escapeHTML(d.valortotal)}</div>
       </div>
       <div class="barcode-wrap">
         <svg class="barcode-svg" jsbarcode-value="${d.numeroPedido||'P'+i}"></svg>
